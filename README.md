@@ -21,10 +21,10 @@ a tutorial — it's a directory of battle-tested examples.
 
 - [Use a workflow](#use-a-workflow)
 - [Workflows](#workflows)
+  - [Research & Synthesis](#research--synthesis)
   - [Code Review & Quality](#code-review--quality)
   - [Bug Hunts & Audits](#bug-hunts--audits)
   - [Migrations & Modernization](#migrations--modernization)
-  - [Research & Synthesis](#research--synthesis)
   - [Design & Planning](#design--planning)
 - [Resources](#resources)
 - [Contributing](#contributing)
@@ -72,6 +72,13 @@ time. Workflows can use **many tokens**; start scoped.
 > scenarios we want to fill. Run a workflow on a real problem? [Add it](#contributing) — that's the
 > whole point of this repo.
 
+### Research & Synthesis
+
+- **[Trading Agents](workflows/trading-agents/)** — Multi-agent equity analysis: 4 analysts in
+  parallel → bull/bear research debate → trader proposal → aggressive/neutral/conservative risk
+  debate → portfolio manager's 5-tier rating. *Patterns: parallel fan-out, sequential debate, judge
+  panel. Research only — not financial advice.*
+
 ### Code Review & Quality
 
 - 🚧 _To be contributed — [add yours](#contributing)._
@@ -83,13 +90,6 @@ time. Workflows can use **many tokens**; start scoped.
 ### Migrations & Modernization
 
 - 🚧 _To be contributed — framework swaps, API deprecations, language ports. [Add yours](#contributing)._
-
-### Research & Synthesis
-
-- **[Trading Agents](workflows/trading-agents/)** — Multi-agent equity analysis: 4 analysts in
-  parallel → bull/bear research debate → trader proposal → aggressive/neutral/conservative risk
-  debate → portfolio manager's 5-tier rating. *Patterns: parallel fan-out, sequential debate, judge
-  panel. Research only — not financial advice.*
 
 ### Design & Planning
 
