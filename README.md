@@ -11,12 +11,6 @@ A community-curated list of real-world <b>Dynamic Workflows in Claude Code</b> �
 shared by the people who actually run them in production.
 </p>
 
-> The workflow-shaped sibling of skill lists like
-> [ComposioHQ/awesome-claude-skills](https://github.com/ComposioHQ/awesome-claude-skills).
-> A *skill* teaches an agent what to do for one task. A *workflow* orchestrates many agents to take
-> on work too big for a single pass. **This list collects workflows people have shipped on real
-> problems** — so you can borrow what works instead of starting from scratch.
-
 New to the feature? See the [official docs](https://code.claude.com/docs/en/workflows) and the
 [launch post](https://claude.com/blog/introducing-dynamic-workflows-in-claude-code). This list isn't
 a tutorial — it's a directory of battle-tested examples.
