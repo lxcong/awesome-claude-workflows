@@ -62,6 +62,12 @@ the run's data, so the *same analysis data always renders the same bytes* — th
 varies run to run. (The upstream analysis itself still varies with the live data and models; it's the
 rendering of a given result that is deterministic.)
 
+What the rendered HTML report looks like (from the committed [example](#sample-run)):
+
+| Masthead + decision | Trade proposal | Analyst cards |
+| --- | --- | --- |
+| [![masthead with rating chip and decision](assets/report-masthead.png)](assets/report-masthead.png) | [![trade proposal section](assets/report-trade.png)](assets/report-trade.png) | [![per-analyst report cards](assets/report-analysts.png)](assets/report-analysts.png) |
+
 ## Install
 
 ```bash
@@ -131,13 +137,13 @@ invent figures.
 
 ## Sample run
 
-A real run is committed at
-[`sample-run-nvda-2026-05-28.json`](sample-run-nvda-2026-05-28.json) — `NVDA`, analysis date
-`2026-05-28`, `debateRounds: 2`, `riskRounds: 1`.
+A real run is committed under [`examples/`](examples/):
 
-The rendered Export artifacts from a run are also committed as examples:
-[`sample-report-nvda-2026-05-28.md`](sample-report-nvda-2026-05-28.md) (full Markdown report) and
-[`sample-report-nvda-2026-05-28.html`](sample-report-nvda-2026-05-28.html) (self-contained HTML page).
+| File | What it is |
+| --- | --- |
+| [`sample-run-nvda-2026-05-28.json`](examples/sample-run-nvda-2026-05-28.json) | The full structured run output — `NVDA`, analysis date `2026-05-28`, `debateRounds: 2`, `riskRounds: 1`. |
+| [`sample-report-nvda-2026-05-28.md`](examples/sample-report-nvda-2026-05-28.md) | The rendered Markdown report from the Export phase. |
+| [`sample-report-nvda-2026-05-28.html`](examples/sample-report-nvda-2026-05-28.html) | The self-contained HTML page (screenshots above). |
 
 - **Scale:** 16 agents, ~763K subagent tokens, 125 tool calls, ~20 min wall-clock.
 - **Final rating:** **Hold** (market-weight), 0% new capital.
