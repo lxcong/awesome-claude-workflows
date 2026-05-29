@@ -57,6 +57,11 @@ a tutorial — it's a directory of battle-tested examples.
 
 ### Research & Synthesis
 
+- **[Trading Agents](workflows/trading-agents/)** — Multi-agent equity analysis modeled on
+  [TauricResearch/TradingAgents](https://github.com/TauricResearch/TradingAgents): 4 analysts in
+  parallel → bull/bear research debate → trader proposal → aggressive/neutral/conservative risk
+  debate → portfolio manager's 5-tier rating. *Patterns: parallel fan-out, sequential debate, judge
+  panel. Research only — not financial advice.*
 - _Your multi-source research workflow here →_ [Contribute](#contributing)
 
 ### Design & Planning
