@@ -7,15 +7,57 @@
 </p>
 
 <p align="center">
-A community-curated list of real-world <b>Dynamic Workflows in Claude Code</b> —
-shared by the people who actually run them in production.
+A community-curated directory of real, production-tested <b>Claude Code dynamic workflows</b> —
+large-scale, multi-agent pipelines you can install and run in one command.
 </p>
 
-New to the feature? See the [official docs](https://code.claude.com/docs/en/workflows) and the
-[launch post](https://claude.com/blog/introducing-dynamic-workflows-in-claude-code). This list isn't
-a tutorial — it's a directory of battle-tested examples.
-
 ---
+
+## The showcase: Trading Agents
+
+The clearest way to explain what this repo collects is to show one. **[Trading Agents](workflows/trading-agents/)**
+turns a single ticker into a rated, risk-checked decision by mirroring how a real trading firm works —
+**four analysts in parallel → a bull/bear research debate → a trader → a three-way risk debate → a
+portfolio manager's final 5-tier rating**, then exports a Markdown report and a self-contained HTML page.
+
+![Trading Agents running in the Claude Code /workflows view — the phase list (Analysts → Research Debate → Verdict → Trader → Risk Debate → Portfolio Manager) beside four analyst agents running in parallel](workflows/trading-agents/assets/run-progress.png)
+
+A single run fans out **15+ agents** that gather live data, argue opposing cases, and adversarially
+check each other before anything is reported — in the [committed sample run](workflows/trading-agents/sample-run-nvda-2026-05-28.json)
+the verification stages flipped a naive "bullish" read into a disciplined **Hold** by refusing to act on
+numbers they couldn't confirm. That is the bar for what belongs here. *(Research only — not financial advice.)*
+
+## Built on Claude Code dynamic workflows
+
+[Dynamic workflows](https://code.claude.com/docs/en/workflows) launched **May 28, 2026** (with Claude
+Opus 4.8). Instead of working a task turn by turn, Claude writes a **JavaScript orchestration script**
+that a runtime runs in the background — fanning out **tens to hundreds of parallel subagents** (up to
+1,000 per run), checking their work, and returning one coordinated answer while your session stays free.
+
+Trading Agents is built on this feature because its problem *is* an orchestration problem, and workflows
+solve exactly the parts that break down when you try to do it with a single agent or ad-hoc subagents:
+
+- **Coordination at scale** — a dozen-plus roles run in parallel and in sequenced debate rounds; one
+  conversation can't hold or coordinate that.
+- **The plan lives in code** — the loop, the branching, and every intermediate result sit in the script,
+  so it's *repeatable* and the chat context only carries the final decision (no context blow-up).
+- **Structured hand-offs** — each role returns a validated, typed object the next stage consumes, instead
+  of brittle free-text passing.
+- **Built-in verification** — independent agents adversarially review findings before they're trusted,
+  which is what makes the result more reliable than a single pass.
+- **Deterministic where it matters** — the exported report and page are rendered by fixed code templates,
+  so the same run data always produces the same artifact.
+
+## Why this project exists
+
+The feature is days old, and we think it's the start of something big: soon **many people will share
+large-scale, agent-to-agent-coordination workflow pipelines** — bug-hunt swarms, migration fleets,
+research harnesses, decision desks like Trading Agents. Today there's no shared home for the ones that
+actually work.
+
+This open-source project is that home. The goal is simple: **make it easy to contribute a workflow you've
+run on a real problem, and easy to find and install the best ones** — so the community compounds its work
+instead of everyone reinventing the same pipeline. Add yours; take what's proven.
 
 ## Contents
 
