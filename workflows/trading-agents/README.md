@@ -42,9 +42,25 @@ including the bull/bear research debate and the aggressive/neutral/conservative 
 - **`args`** for `ticker`, `date`, `debateRounds`, `riskRounds` (no `new Date()` in workflow scripts,
   so the analysis date is passed in).
 
+## Install
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/lxcong/awesome-claude-workflows/main/install.sh | bash -s -- trading-agents
+```
+
+This drops the script into `~/.claude/workflows/trading-agents.js`, where Claude Code auto-discovers
+it as the `/trading-agents` command. (See the [repo install guide](../../README.md#use-a-workflow)
+for project-scope and clone-based options.)
+
 ## Run it
 
-From Claude Code, ask Claude to run the workflow, or invoke directly:
+Once installed, run it by name in Claude Code:
+
+```
+/trading-agents NVDA as of 2026-05-28
+```
+
+Or invoke the script directly without installing:
 
 ```js
 Workflow({

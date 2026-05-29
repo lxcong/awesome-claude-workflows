@@ -19,6 +19,7 @@ a tutorial — it's a directory of battle-tested examples.
 
 ## Contents
 
+- [Use a workflow](#use-a-workflow)
 - [Workflows](#workflows)
   - [Code Review & Quality](#code-review--quality)
   - [Bug Hunts & Audits](#bug-hunts--audits)
@@ -28,6 +29,42 @@ a tutorial — it's a directory of battle-tested examples.
 - [Resources](#resources)
 - [Contributing](#contributing)
 - [License](#license)
+
+## Use a workflow
+
+Claude Code auto-discovers any workflow file dropped into `~/.claude/workflows/` (user scope, every
+project) or `./.claude/workflows/` (project scope). Each one becomes a `/<name>` slash command — no
+plugin, manifest, or registration needed.
+
+**Install with one command** (installs into `~/.claude/workflows/`):
+
+```bash
+# no clone needed — install a single workflow by name
+curl -fsSL https://raw.githubusercontent.com/lxcong/awesome-claude-workflows/main/install.sh | bash -s -- trading-agents
+```
+
+Or from a clone:
+
+```bash
+git clone https://github.com/lxcong/awesome-claude-workflows.git
+cd awesome-claude-workflows
+./install.sh                  # install all workflows (user scope)
+./install.sh trading-agents   # just one
+./install.sh --project trading-agents   # into ./.claude/workflows/ instead
+```
+
+**Then, in Claude Code:**
+
+```
+/trading-agents NVDA as of 2026-05-28
+```
+
+or run `/workflows` to browse. (Manual alternative: copy any
+`workflows/<name>/<name>.workflow.js` to `~/.claude/workflows/<name>.js` yourself.)
+
+**Prerequisites:** Claude Code **v2.1.154+**, a paid plan, and Dynamic workflows enabled in
+`/config`. The first run asks you to approve the plan — pick *"don't ask again"* to skip it next
+time. Workflows can use **many tokens**; start scoped.
 
 ## Workflows
 

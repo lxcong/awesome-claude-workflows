@@ -17,13 +17,39 @@ orchestration patterns, example scripts, and best practices.
 - Untested or purely hypothetical workflows. Prefer things you've actually run.
 - Single-agent skills — those belong in a skills list (e.g. awesome-claude-skills).
 
-## How to add an entry
+## Bundling a runnable workflow (so others can one-command install it)
+
+The repo ships an [`install.sh`](install.sh) that copies a workflow into a user's
+`~/.claude/workflows/`, where Claude Code auto-discovers it as a `/<name>` command. For that to work,
+follow this layout and format:
+
+1. **Directory:** `workflows/<name>/` where `<name>` is kebab-case and matches your `meta.name`.
+2. **Script file:** `workflows/<name>/<name>.workflow.js`. The installer copies it to
+   `~/.claude/workflows/<name>.js`.
+3. **Format:** a dynamic-workflow script that starts with a pure-literal `meta` block:
+
+   ```js
+   export const meta = {
+     name: 'your-name',          // becomes the /your-name command — match the directory
+     description: '...',          // one line, shown in the approval prompt
+     phases: [{ title: '...' }],  // one entry per phase() call
+   }
+   // ...orchestration using agent()/parallel()/pipeline()/phase()/log()
+   ```
+
+4. **Inputs:** read runtime inputs from the `args` global and provide sane defaults — workflow
+   scripts can't call `new Date()`/`Math.random()`, so pass dates/seeds via `args`.
+5. **README:** add `workflows/<name>/README.md` with architecture, an install one-liner, args, and a
+   rough token cost. A committed sample run (`sample-run-*.json`) is a big plus.
+6. **Verify it runs** before submitting, and `node --check` the script for syntax.
+
+## How to add a list entry
 
 1. Fork the repo and create a branch.
 2. Add your entry to the correct section of [`README.md`](README.md). Format:
 
    ```markdown
-   - [Name](link) — One-line description. *Patterns: pipeline, adversarial verify.* *By [@you](https://github.com/you)*
+   - [Name](workflows/your-name/) — One-line description. *Patterns: pipeline, adversarial verify.* *By [@you](https://github.com/you)*
    ```
 
 3. Keep entries alphabetical within a section where practical.
