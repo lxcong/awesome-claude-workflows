@@ -11,6 +11,12 @@ A community-curated list of real-world <b>Dynamic Workflows in Claude Code</b> �
 shared by the people who actually run them in production.
 </p>
 
+<p align="center">
+  <a href="#workflows"><b>Browse workflows</b></a> ·
+  <a href="#use-a-workflow"><b>Install one</b></a> ·
+  <a href="#contributing"><b>Contribute yours</b></a>
+</p>
+
 New to the feature? See the [official docs](https://code.claude.com/docs/en/workflows) and the
 [launch post](https://claude.com/blog/introducing-dynamic-workflows-in-claude-code). This list isn't
 a tutorial — it's a directory of battle-tested examples.
