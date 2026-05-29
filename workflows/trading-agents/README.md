@@ -1,9 +1,8 @@
 # Trading Agents
 
-A multi-agent equity-analysis workflow for Claude Code, modeled faithfully on
-[TauricResearch/TradingAgents](https://github.com/TauricResearch/TradingAgents) — a framework that
-mirrors the structure of a real trading firm. It reproduces that firm's roles and debate dynamics as
-a single Claude Code **dynamic workflow**.
+A multi-agent equity-analysis workflow for Claude Code that mirrors the structure of a real trading
+firm — reproducing its specialized roles and debate dynamics as a single Claude Code **dynamic
+workflow**.
 
 > ⚠️ **Research and education only. Not financial, investment, or trading advice.** Every agent is
 > instructed to ground claims in retrieved data and to flag — never fabricate — anything it can't
@@ -29,9 +28,8 @@ a single Claude Code **dynamic workflow**.
                          Portfolio Manager  ──  final 5-tier rating (Buy/Overweight/Hold/Underweight/Sell)
 ```
 
-This maps 1:1 onto TradingAgents' Analyst Team → Researcher Team → Trader → Risk Management →
-Portfolio Manager pipeline, including the bull/bear research debate and the
-aggressive/neutral/conservative risk debate.
+The pipeline runs Analyst Team → Researcher Team → Trader → Risk Management → Portfolio Manager,
+including the bull/bear research debate and the aggressive/neutral/conservative risk debate.
 
 ## How it uses workflow primitives
 
@@ -106,10 +104,10 @@ This fans out ~12+ agents per run (4 analysts + 2×`debateRounds` debaters + res
 cost **meaningfully more than a normal session** — start with one ticker and the default rounds before
 scaling up.
 
-## Differences from upstream
+## Scope & limitations
 
 - No simulated exchange / order execution — the workflow ends at the Portfolio Manager's rated
   decision (it does not place trades).
-- No persistent decision log or backtesting loop (upstream persists reflections across runs).
-- Data access depends on the tools connected to your Claude Code session rather than upstream's
-  bundled yfinance/Alpha Vantage/Reddit fetchers.
+- No persistent decision log or backtesting loop — each run is independent.
+- Data access depends on the tools connected to your Claude Code session; with no data tools
+  connected, agents report `dataGaps` rather than invent figures.

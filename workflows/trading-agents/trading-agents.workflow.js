@@ -1,9 +1,8 @@
 /**
  * Trading Agents — a multi-agent financial analysis workflow for Claude Code.
  *
- * Faithfully mirrors the architecture of TauricResearch/TradingAgents
- * (https://github.com/TauricResearch/TradingAgents), reimagined as a single
- * Claude Code dynamic workflow:
+ * Mirrors the structure of a real trading firm as a single Claude Code
+ * dynamic workflow:
  *
  *   Analyst Team (4 parallel)  →  Researcher Debate (bull vs bear, N rounds)
  *   →  Research Manager verdict →  Trader proposal
@@ -21,7 +20,7 @@
 
 export const meta = {
   name: 'trading-agents',
-  description: 'Multi-agent equity analysis (analysts → bull/bear debate → trader → risk → PM) modeled on TauricResearch/TradingAgents',
+  description: 'Multi-agent equity analysis (analysts → bull/bear debate → trader → risk → PM)',
   whenToUse: 'Deep, multi-perspective analysis of a single ticker that ends in a rated, risk-checked decision. Research only — not financial advice.',
   phases: [
     { title: 'Analysts', detail: '4 analysts gather data in parallel: fundamentals, sentiment, news, technical' },

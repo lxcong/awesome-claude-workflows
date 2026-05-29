@@ -1,5 +1,5 @@
 {
-  "summary": "Multi-agent equity analysis (analysts → bull/bear debate → trader → risk → PM) modeled on TauricResearch/TradingAgents",
+  "summary": "Multi-agent equity analysis (analysts → bull/bear debate → trader → risk → PM)",
   "agentCount": 15,
   "logs": [
     "Analyzing NVDA as of the most recent trading day — dispatching 4 analysts",
