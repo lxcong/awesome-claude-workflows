@@ -135,32 +135,40 @@ A real run is committed at
 [`sample-run-nvda-2026-05-28.json`](sample-run-nvda-2026-05-28.json) — `NVDA`, analysis date
 `2026-05-28`, `debateRounds: 2`, `riskRounds: 1`.
 
-- **Scale:** 15 agents, ~629K subagent tokens, 120 tool calls, ~15 min wall-clock.
+The rendered Export artifacts from a run are also committed as examples:
+[`sample-report-nvda-2026-05-28.md`](sample-report-nvda-2026-05-28.md) (full Markdown report) and
+[`sample-report-nvda-2026-05-28.html`](sample-report-nvda-2026-05-28.html) (self-contained HTML page).
+
+- **Scale:** 16 agents, ~763K subagent tokens, 125 tool calls, ~20 min wall-clock.
 - **Final rating:** **Hold** (market-weight), 0% new capital.
 
 | Stage | Outcome |
 | --- | --- |
-| Fundamentals | 🟢 bullish (0.74) — Q1 FY27 rev $81.6B (+85%), 74.9% GM, $96.7B FCF, fwd PEG ~1.0 |
-| Sentiment | ⚪ neutral (0.58) — beat-but-faded; retail mood cooling; China-ban / Burry-short overhang |
-| News | 🟢 bullish (0.62) — demand intact, but China DC revenue zeroed from guidance, rates a headwind |
-| Technical | 🟢 bullish (0.58) — bullish MA stack, but stalled in a ~$198–226 box on below-avg volume |
-| Research debate → manager | **mixed, conviction 0.62, lean hold** — "bull wins the present, bear wins the forward risk" |
-| Trader | **HOLD** — no add at $212–214; >$226 close → add, <$198 close → trim |
-| Risk debate (3 views) → manager | **medium, 2-to-1 against adding size** — overruled the add case on unconfirmed 50-DMA levels |
+| Fundamentals | 🟢 bullish (0.78) — Q1 FY27 rev $81.6B (+85%), 74.9% GM, ~60% FCF margin, ~32.6x trailing / ~21.5x fwd |
+| Sentiment | ⚪ neutral (0.62) — beat-but-faded; StockTwits cooled extremely-bullish→bullish; rotation into MU/other semis; China/Huawei overhang |
+| News | 🟢 bullish (0.60) — demand intact, but China DC compute zeroed from Q2 guidance; stagflation-tilt + hawkish-hold Fed a headwind |
+| Technical | 🟢 bullish (0.55) — bullish MA stack (50d>200d golden cross), pullback-in-uptrend ~10% off the $236 ATH; $207–208 first support |
+| Research debate → manager | **mixed, conviction 0.62, lean hold** — "bull owns the present, bear owns the forward risk" |
+| Trader | **HOLD** — no add at $212.58; stage adds only on a reset to $197–200; <$197 close → trim, <$187 (200d) → reduce core |
+| Risk debate (3 views) → manager | **medium, all 3 approve-with-changes → HOLD** — corrected inflated bear figures before forwarding to the PM |
 
 What this run demonstrates about workflows:
 
-- **Grounded, not fabricated.** Every analyst cited real sources (NVIDIA IR, SEC, Barchart,
-  StockTwits, …) and logged what it *couldn't* verify under `dataGaps` instead of inventing figures.
-- **Adversarial verification caught real errors.** The risk manager flagged that three reviewers
-  reported three conflicting moving-average levels; the portfolio manager then reconciled them against
-  a single authoritative source and corrected the trader memo's figures before approving.
-- **Guardrails held.** The agents repeatedly noted that this is public-equity analysis with no
-  payment/wallet action implicated.
+- **Grounded, not fabricated.** Every analyst cited real sources (NVIDIA IR, SEC, Yahoo Finance,
+  StockTwits, Federal Reserve releases, …) and logged what it *couldn't* verify under `dataGaps`
+  instead of inventing figures.
+- **Adversarial verification caught real errors.** The risk manager flagged that the bear case (and
+  the research verdict that absorbed it) leaned on overstated figures — a "~$200B Google deal" that
+  verified to ~$40B Google TPU + ~$21B Broadcom, a "~41x trailing" multiple that was actually
+  ~32.6x / ~21.5x forward, and an "explicit Fed hike bias" that was really a restrictive hold with
+  hawkish dissent. The portfolio manager applied those corrections before approving.
+- **Guardrails held.** The research/education-only disclaimer is threaded through every stage, and a
+  stale behavioral signal (a March-dated Huang pledge trim, already overtaken by the May print) was
+  explicitly down-weighted rather than carried forward as current evidence.
 
-> The decision flipped to a disciplined **Hold** specifically *because* the verification stages
-> refused to act on unconfirmed technical levels — a single-pass answer would likely have taken the
-> bullish analyst signals at face value.
+> The decision held at a disciplined **Hold** specifically *because* the verification stages refused
+> to act on overstated bear figures or a misframed Fed — a single-pass answer would likely have either
+> taken the bullish analyst signals at face value or over-rotated on the inflated downside case.
 
 ## Cost
 
