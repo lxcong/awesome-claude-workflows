@@ -66,6 +66,39 @@ The agents discover and use whatever web-search / market-data / news / social to
 your session (via `ToolSearch`). With no data tools connected, they will report `dataGaps` rather
 than invent figures.
 
+## Sample run
+
+A real run is committed at
+[`sample-run-nvda-2026-05-28.json`](sample-run-nvda-2026-05-28.json) — `NVDA`, analysis date
+`2026-05-28`, `debateRounds: 2`, `riskRounds: 1`.
+
+- **Scale:** 15 agents, ~629K subagent tokens, 120 tool calls, ~15 min wall-clock.
+- **Final rating:** **Hold** (market-weight), 0% new capital.
+
+| Stage | Outcome |
+| --- | --- |
+| Fundamentals | 🟢 bullish (0.74) — Q1 FY27 rev $81.6B (+85%), 74.9% GM, $96.7B FCF, fwd PEG ~1.0 |
+| Sentiment | ⚪ neutral (0.58) — beat-but-faded; retail mood cooling; China-ban / Burry-short overhang |
+| News | 🟢 bullish (0.62) — demand intact, but China DC revenue zeroed from guidance, rates a headwind |
+| Technical | 🟢 bullish (0.58) — bullish MA stack, but stalled in a ~$198–226 box on below-avg volume |
+| Research debate → manager | **mixed, conviction 0.62, lean hold** — "bull wins the present, bear wins the forward risk" |
+| Trader | **HOLD** — no add at $212–214; >$226 close → add, <$198 close → trim |
+| Risk debate (3 views) → manager | **medium, 2-to-1 against adding size** — overruled the add case on unconfirmed 50-DMA levels |
+
+What this run demonstrates about workflows:
+
+- **Grounded, not fabricated.** Every analyst cited real sources (NVIDIA IR, SEC, Barchart,
+  StockTwits, …) and logged what it *couldn't* verify under `dataGaps` instead of inventing figures.
+- **Adversarial verification caught real errors.** The risk manager flagged that three reviewers
+  reported three conflicting moving-average levels; the portfolio manager then reconciled them against
+  a single authoritative source and corrected the trader memo's figures before approving.
+- **Guardrails held.** The agents repeatedly noted that this is public-equity analysis with no
+  payment/wallet action implicated.
+
+> The decision flipped to a disciplined **Hold** specifically *because* the verification stages
+> refused to act on unconfirmed technical levels — a single-pass answer would likely have taken the
+> bullish analyst signals at face value.
+
 ## Cost
 
 This fans out ~12+ agents per run (4 analysts + 2×`debateRounds` debaters + research manager + trader
