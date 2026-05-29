@@ -82,6 +82,13 @@ Workflow({
 })
 ```
 
+### What a run looks like
+
+The run executes in the background; press `/workflows` to watch it phase by phase — here the four
+analysts gathering data in parallel, each with its live token and tool-call counts:
+
+![Trading Agents running in the Claude Code /workflows view: the Phases panel (Analysts → Research Debate → Research Verdict → Trader → Risk Debate → Portfolio Manager) beside the four parallel analyst agents](assets/run-progress.png)
+
 ### Parameters
 
 | Arg | Default | Meaning |
