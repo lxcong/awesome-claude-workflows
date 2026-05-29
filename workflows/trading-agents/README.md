@@ -26,10 +26,12 @@ workflow**.
                          Risk Manager  ──  risk rating + required adjustments
                                                      ▼
                          Portfolio Manager  ──  final 5-tier rating (Buy/Overweight/Hold/Underweight/Sell)
+                                                     ▼
+                         Export  ──  Markdown report  +  deterministic HTML page
 ```
 
-The pipeline runs Analyst Team → Researcher Team → Trader → Risk Management → Portfolio Manager,
-including the bull/bear research debate and the aggressive/neutral/conservative risk debate.
+The pipeline runs Analyst Team → Researcher Team → Trader → Risk Management → Portfolio Manager →
+Export, including the bull/bear research debate and the aggressive/neutral/conservative risk debate.
 
 ## How it uses workflow primitives
 
@@ -39,8 +41,26 @@ including the bull/bear research debate and the aggressive/neutral/conservative 
 - **`agent({ schema })`** everywhere a downstream stage consumes the result, so each role returns a
   validated structured object instead of free text.
 - **`phase()` / `log()`** to surface progress role-by-role in the `/workflows` view.
-- **`args`** for `ticker`, `date`, `debateRounds`, `riskRounds` (no `new Date()` in workflow scripts,
-  so the analysis date is passed in).
+- **`args`** for `ticker`, `date`, `debateRounds`, `riskRounds`, `outDir` (no `new Date()` in workflow
+  scripts, so the analysis date is passed in).
+- **Export via fixed code templates.** The final phase renders the Markdown and HTML from pure
+  functions of the run's structured data — no LLM redesign, no timestamps, no randomness — then one
+  agent writes the pre-rendered bytes to disk (the script itself can't touch the filesystem).
+
+## Outputs
+
+The Export phase writes two artifacts to `outDir/` (default `trading-agents-reports/`), named
+`<ticker>-<date>`:
+
+| File | What it is |
+| --- | --- |
+| `<ticker>-<date>.md` | A complete Markdown report — decision, conditions, key risks, trade proposal, risk-manager call, research verdict, and every analyst's full report with sources. |
+| `<ticker>-<date>.html` | A self-contained, single-file HTML page (inline CSS, no external/CDN deps) in a minimal research-report layout: a masthead with the rating chip, then the same sections and per-analyst cards. |
+
+**Deterministic by construction.** Both files are built by fixed templates that are pure functions of
+the run's data, so the *same analysis data always renders the same bytes* — the page layout never
+varies run to run. (The upstream analysis itself still varies with the live data and models; it's the
+rendering of a given result that is deterministic.)
 
 ## Install
 
@@ -97,9 +117,13 @@ analysts gathering data in parallel, each with its live token and tool-call coun
 | `date` | most recent trading day | Analysis date; agents ignore information after it. From the slash command, a `YYYY-MM-DD` in your text. |
 | `debateRounds` | `2` | Bull⇄bear research debate rounds (object/`Workflow()` args only) |
 | `riskRounds` | `1` | Risk-reviewer debate rounds (object/`Workflow()` args only) |
+| `outDir` | `trading-agents-reports` | Folder the report `.md` / `.html` are written to (object/`Workflow()` args only) |
 
 > When run as the `/trading-agents` slash command, only `ticker` and `date` are read from the trailing
-> text. To change `debateRounds` / `riskRounds`, use method 2 or 3.
+> text. To change `debateRounds` / `riskRounds` / `outDir`, use method 2 or 3.
+
+When the run finishes you get both the in-session summary **and** the two files under
+`outDir/` — see [Outputs](#outputs).
 
 The agents discover and use whatever web-search / market-data / news / social tools are available in
 your session (via `ToolSearch`). With no data tools connected, they report `dataGaps` rather than

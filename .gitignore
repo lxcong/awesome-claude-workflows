@@ -16,3 +16,7 @@ yarn-error.log*
 .env
 .env.*
 *.local
+
+# Workflow run outputs
+trading-agents-reports/
+.playwright-mcp/

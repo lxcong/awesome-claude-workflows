@@ -8,6 +8,7 @@
  *   →  Research Manager verdict →  Trader proposal
  *   →  Risk Debate (aggressive / neutral / conservative) → Risk Manager
  *   →  Portfolio Manager final call (5-tier rating)
+ *   →  Export: a Markdown report + a deterministic, self-contained HTML page
  *
  * Run it:
  *   Workflow({ scriptPath: ".../trading-agents.workflow.js",
@@ -29,6 +30,7 @@ export const meta = {
     { title: 'Trader', detail: 'Trader turns the verdict into a concrete proposal' },
     { title: 'Risk Debate', detail: 'Aggressive / neutral / conservative risk reviewers stress-test the trade' },
     { title: 'Portfolio Manager', detail: 'Final approve/reject with a 5-tier rating' },
+    { title: 'Export', detail: 'Write a Markdown report and a deterministic, self-contained HTML page' },
   ],
 }
 
@@ -46,6 +48,7 @@ const ticker = _obj.ticker || (_ticker && _ticker[0]) || 'NVDA'
 const date = _obj.date || (_date && _date[0]) || 'the most recent trading day'
 const debateRounds = _obj.debateRounds || 2
 const riskRounds = _obj.riskRounds || 1
+const outDir = _obj.outDir || 'trading-agents-reports'
 
 const DATA_RULES = `
 Ground every claim in data you actually retrieve using the tools available to you
@@ -278,6 +281,45 @@ const decision = await agent(
 
 log(`Final rating for ${ticker}: ${decision.decision}`)
 
+// ---- Phase 7: Export artifacts ---------------------------------------------
+// Both artifacts are built by fixed templates (pure functions of the run data)
+// — no LLM redesign, no timestamps, no randomness — so the same data always
+// renders the same files. The workflow script can't touch the filesystem, so a
+// single agent writes the pre-rendered bytes verbatim.
+phase('Export')
+
+const report = {
+  ticker, date, decision,
+  riskManager: riskManagerCall,
+  trade, researchVerdict,
+  analysts: analystReports,
+}
+const slug = `${ticker}-${date}`.replace(/[^A-Za-z0-9._-]+/g, '_')
+const mdPath = `${outDir}/${slug}.md`
+const htmlPath = `${outDir}/${slug}.html`
+const markdown = buildMarkdown(report)
+const html = buildHtml(report)
+
+await agent(
+  `Write two pre-rendered report files to disk EXACTLY as given — byte for byte. Do NOT edit,
+   reformat, summarize, pretty-print, or add anything of your own. Create the directory "${outDir}"
+   if it does not exist, then use the Write tool to create each file with the exact content between
+   its markers (do not include the marker lines). Reply with only the two file paths.
+
+=== FILE A === path: ${mdPath}
+<<<<<<MARKDOWN_BEGIN
+${markdown}
+MARKDOWN_END>>>>>>
+
+=== FILE B === path: ${htmlPath}
+<<<<<<HTML_BEGIN
+${html}
+HTML_END>>>>>>`,
+  { label: 'export', phase: 'Export' },
+)
+
+log(`Exported report → ${mdPath} and ${htmlPath}`)
+
 return {
   ticker,
   date,
@@ -286,5 +328,186 @@ return {
   trade,
   researchVerdict,
   analysts: analystReports,
+  artifacts: { markdown: mdPath, html: htmlPath },
   disclaimer: 'Research/education only. Not financial, investment, or trading advice.',
+}
+
+// ---- Deterministic artifact builders (pure functions of the run data) ------
+function esc(s) {
+  return String(s == null ? '' : s)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+}
+function chipClass(v) {
+  const s = String(v || '').toLowerCase()
+  if (/(bull|buy|overweight|approve|low)/.test(s)) return 'pos'
+  if (/(bear|sell|underweight|reject|high)/.test(s)) return 'neg'
+  return 'neu'
+}
+function mdList(items) {
+  return items && items.length ? items.map(x => `- ${x}`).join('\n') : '_None._'
+}
+function htmlList(items) {
+  return items && items.length
+    ? `<ul>${items.map(x => `<li>${esc(x)}</li>`).join('')}</ul>`
+    : '<p class="muted">None.</p>'
+}
+function paras(text) {
+  const t = String(text || '').trim()
+  if (!t) return ''
+  return t.split(/\n\n+/).map(p => `<p>${esc(p).replace(/\n/g, '<br>')}</p>`).join('')
+}
+
+function buildMarkdown(r) {
+  const d = r.decision, t = r.trade, rm = r.riskManager, rv = r.researchVerdict
+  const analysts = r.analysts.map(a => [
+    `### ${a.analyst}`,
+    `**Signal:** ${a.signal} · confidence ${a.confidence}`,
+    a.summary || '',
+    `**Key points**\n${mdList(a.keyPoints)}`,
+    `**Risks**\n${mdList(a.risks)}`,
+    `**Data gaps**\n${mdList(a.dataGaps)}`,
+    `**Sources**\n${mdList(a.sources)}`,
+  ].join('\n\n')).join('\n\n')
+
+  return [
+    `# ${r.ticker} — Equity Analysis`,
+    `**Analysis date:** ${r.date}  \n**Final rating:** ${d.decision}` +
+      (typeof d.positionSizePct === 'number' ? ` · position ${d.positionSizePct}%` : ''),
+    `> ⚠️ Research/education only. Not financial, investment, or trading advice.`,
+    `## Decision`,
+    d.finalAction || '',
+    d.rationale || '',
+    `### Conditions\n${mdList(d.conditions)}`,
+    `### Key risks\n${mdList(d.keyRisks)}`,
+    `## Trade proposal`,
+    [
+      `- **Action:** ${t.action}` + (typeof t.sizePct === 'number' ? ` · size ${t.sizePct}%` : ''),
+      `- **Entry:** ${t.entry || '—'}`,
+      `- **Stop loss:** ${t.stopLoss || '—'}`,
+      `- **Take profit:** ${t.takeProfit || '—'}`,
+      `- **Timeframe:** ${t.timeframe || '—'}`,
+    ].join('\n'),
+    t.rationale || '',
+    `## Risk manager`,
+    `- **Risk rating:** ${rm.riskRating}\n- **Approved for PM:** ${rm.approvedForPM ? 'yes' : 'no'}`,
+    `**Required adjustments**\n${mdList(rm.requiredAdjustments)}`,
+    rm.rationale || '',
+    `## Research verdict`,
+    `- **Stance:** ${rv.stance} · **lean:** ${rv.lean} · **conviction:** ${rv.conviction}`,
+    `**Strongest bull argument**\n\n${rv.strongestBullArgument || '—'}`,
+    `**Strongest bear argument**\n\n${rv.strongestBearArgument || '—'}`,
+    rv.rationale || '',
+    `## Analyst reports`,
+    analysts,
+    `---\n_Generated by the trading-agents workflow. Research only — not financial advice._`,
+  ].filter(Boolean).join('\n\n') + '\n'
+}
+
+function buildHtml(r) {
+  const d = r.decision, t = r.trade, rm = r.riskManager, rv = r.researchVerdict
+  const cards = r.analysts.map(a => `
+      <article class="card">
+        <div class="card-h"><h3>${esc(a.analyst)}</h3><span class="chip ${chipClass(a.signal)}">${esc(a.signal)} · ${esc(a.confidence)}</span></div>
+        ${paras(a.summary)}
+        <h4>Key points</h4>${htmlList(a.keyPoints)}
+        ${a.risks && a.risks.length ? `<h4>Risks</h4>${htmlList(a.risks)}` : ''}
+        ${a.dataGaps && a.dataGaps.length ? `<h4>Data gaps</h4>${htmlList(a.dataGaps)}` : ''}
+        ${a.sources && a.sources.length ? `<details><summary>Sources (${a.sources.length})</summary>${htmlList(a.sources)}</details>` : ''}
+      </article>`).join('')
+
+  const css = `
+    *{box-sizing:border-box}
+    body{margin:0;background:#fbfaf7;color:#1a1a1a;font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+    main{max-width:760px;margin:0 auto;padding:64px 24px 96px}
+    .masthead{border-bottom:2px solid #1a1a1a;padding-bottom:24px;margin-bottom:8px}
+    .eyebrow{letter-spacing:.12em;text-transform:uppercase;font-size:12px;color:#6b6b6b;margin:0 0 6px}
+    h1{font:700 44px/1.1 Georgia,"Times New Roman",serif;margin:0 0 16px}
+    h2{font:700 22px/1.3 Georgia,serif;margin:48px 0 12px;padding-bottom:6px;border-bottom:1px solid #e6e3dd}
+    h3{font-size:16px;margin:24px 0 8px}
+    h4{font-size:12px;text-transform:uppercase;letter-spacing:.07em;color:#6b6b6b;margin:18px 0 6px}
+    p{margin:0 0 14px}.muted{color:#6b6b6b}
+    .disclaimer{color:#6b6b6b;font-size:13px;margin:14px 0 0}
+    .verdict{display:flex;align-items:center;gap:12px;margin-top:8px}
+    .chip{display:inline-block;padding:3px 12px;border-radius:999px;font-size:13px;font-weight:600}
+    .rating{font-size:18px;padding:6px 18px}
+    .chip.pos{background:#e8f5ee;color:#0a7f3f}.chip.neg{background:#fbeceb;color:#b3261e}.chip.neu{background:#fdf3da;color:#8a6d00}
+    ul{margin:0 0 14px;padding-left:20px}li{margin:4px 0}
+    table.kv{width:100%;border-collapse:collapse;margin:0 0 16px}
+    table.kv th{text-align:left;width:120px;color:#6b6b6b;font-weight:600;vertical-align:top;padding:6px 12px 6px 0}
+    table.kv td{padding:6px 0}
+    .cards{display:grid;gap:20px}
+    .card{border:1px solid #e6e3dd;border-radius:10px;padding:20px;background:#fff}
+    .card-h{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:8px}.card-h h3{margin:0}
+    .two-col{display:grid;grid-template-columns:1fr 1fr;gap:24px}@media(max-width:600px){.two-col{grid-template-columns:1fr}}
+    details{margin-top:10px}summary{cursor:pointer;color:#6b6b6b;font-size:13px}
+    footer{margin-top:64px;padding-top:16px;border-top:1px solid #e6e3dd;color:#6b6b6b;font-size:12px}`
+
+  return `<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>${esc(r.ticker)} — Equity Analysis (${esc(r.date)})</title>
+<style>${css}</style>
+</head>
+<body>
+<main>
+  <header class="masthead">
+    <p class="eyebrow">Equity analysis · ${esc(r.date)}</p>
+    <h1>${esc(r.ticker)}</h1>
+    <div class="verdict">
+      <span class="rating chip ${chipClass(d.decision)}">${esc(d.decision)}</span>
+      ${typeof d.positionSizePct === 'number' ? `<span class="muted">position ${esc(d.positionSizePct)}%</span>` : ''}
+    </div>
+  </header>
+  <p class="disclaimer">⚠️ Research/education only. Not financial, investment, or trading advice.</p>
+
+  <section>
+    <h2>Decision</h2>
+    ${paras(d.finalAction)}
+    ${paras(d.rationale)}
+    <h3>Conditions</h3>${htmlList(d.conditions)}
+    <h3>Key risks</h3>${htmlList(d.keyRisks)}
+  </section>
+
+  <section>
+    <h2>Trade proposal</h2>
+    <table class="kv">
+      <tr><th>Action</th><td>${esc(t.action)}${typeof t.sizePct === 'number' ? ` · size ${esc(t.sizePct)}%` : ''}</td></tr>
+      <tr><th>Entry</th><td>${esc(t.entry || '—')}</td></tr>
+      <tr><th>Stop loss</th><td>${esc(t.stopLoss || '—')}</td></tr>
+      <tr><th>Take profit</th><td>${esc(t.takeProfit || '—')}</td></tr>
+      <tr><th>Timeframe</th><td>${esc(t.timeframe || '—')}</td></tr>
+    </table>
+    ${paras(t.rationale)}
+  </section>
+
+  <section>
+    <h2>Risk manager</h2>
+    <p><span class="chip ${chipClass(rm.riskRating)}">${esc(rm.riskRating)} risk</span> · approved for PM: ${rm.approvedForPM ? 'yes' : 'no'}</p>
+    <h3>Required adjustments</h3>${htmlList(rm.requiredAdjustments)}
+    ${paras(rm.rationale)}
+  </section>
+
+  <section>
+    <h2>Research verdict</h2>
+    <p><span class="chip ${chipClass(rv.stance)}">${esc(rv.stance)}</span> · lean ${esc(rv.lean)} · conviction ${esc(rv.conviction)}</p>
+    <div class="two-col">
+      <div><h4>Strongest bull</h4>${paras(rv.strongestBullArgument)}</div>
+      <div><h4>Strongest bear</h4>${paras(rv.strongestBearArgument)}</div>
+    </div>
+    ${paras(rv.rationale)}
+  </section>
+
+  <section>
+    <h2>Analyst reports</h2>
+    <div class="cards">${cards}
+    </div>
+  </section>
+
+  <footer>Generated by the trading-agents workflow · ${esc(r.ticker)} · ${esc(r.date)}</footer>
+</main>
+</body>
+</html>
+`
 }
