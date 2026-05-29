@@ -68,29 +68,21 @@ time. Workflows can use **many tokens**; start scoped.
 
 ## Workflows
 
-> 🌱 **This list is just getting started.** Have a workflow you've run on a real problem?
-> [Add it](#contributing) — one line, a link, and the use case. That's the whole point of this repo.
+> 🌱 **This list is just getting started — one workflow so far.** The categories below are the
+> scenarios we want to fill. Run a workflow on a real problem? [Add it](#contributing) — that's the
+> whole point of this repo.
 
 ### Code Review & Quality
 
-- _Your workflow here →_ [Contribute](#contributing)
+- 🚧 _To be contributed — [add yours](#contributing)._
 
 ### Bug Hunts & Audits
 
-- **Klarna — dead-code discovery** — Used dynamic workflows to identify dead code and surface cleanup
-  opportunities that traditional static analysis missed, speeding up maintenance and refactoring.
-  *(Reported in the [Anthropic launch post](https://claude.com/blog/introducing-dynamic-workflows-in-claude-code).)*
-- _Your codebase-wide bug hunt / security audit here →_ [Contribute](#contributing)
+- 🚧 _To be contributed — codebase-wide bug hunts, security audits, dead-code sweeps. [Add yours](#contributing)._
 
 ### Migrations & Modernization
 
-- **Rewriting Bun (Zig → Rust)** — Jarred Sumner ported Bun from Zig to Rust with dynamic workflows:
-  **~750,000 lines of Rust, 99.8% of the test suite passing, 11 days from first commit to merge.**
-  One workflow mapped Rust lifetimes for every struct field; the next ported every `.rs` file as a
-  behavior-identical translation with two reviewers each; a fix-loop drove build + tests until clean;
-  an overnight workflow opened PRs for redundant-copy cleanups.
-  *(Source: [Anthropic launch post](https://claude.com/blog/introducing-dynamic-workflows-in-claude-code).)*
-- _Your framework swap / API deprecation / language port here →_ [Contribute](#contributing)
+- 🚧 _To be contributed — framework swaps, API deprecations, language ports. [Add yours](#contributing)._
 
 ### Research & Synthesis
 
@@ -98,14 +90,10 @@ time. Workflows can use **many tokens**; start scoped.
   parallel → bull/bear research debate → trader proposal → aggressive/neutral/conservative risk
   debate → portfolio manager's 5-tier rating. *Patterns: parallel fan-out, sequential debate, judge
   panel. Research only — not financial advice.*
-- _Your multi-source research workflow here →_ [Contribute](#contributing)
 
 ### Design & Planning
 
-- **CyberAgent — plan-to-implementation** — Reported that workflows "fill the gap between firing off a
-  single subagent and building out a full agent team," enabling trusted longer runs without losing
-  visibility. *(Reported in the [Anthropic launch post](https://claude.com/blog/introducing-dynamic-workflows-in-claude-code).)*
-- _Your plan stress-test / design workflow here →_ [Contribute](#contributing)
+- 🚧 _To be contributed — plan stress-tests, design judge panels. [Add yours](#contributing)._
 
 ## Resources
 

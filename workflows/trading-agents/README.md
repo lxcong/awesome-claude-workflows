@@ -54,31 +54,49 @@ for project-scope and clone-based options.)
 
 ## Run it
 
-Once installed, run it by name in Claude Code:
+Pick whichever fits — all three reach the same workflow.
+
+**1. Slash command** (after installing). Type the command and put the ticker (and optional date) in
+the trailing text; the script parses them out:
 
 ```
 /trading-agents NVDA as of 2026-05-28
 ```
 
-Or invoke the script directly without installing:
+A bare `/trading-agents` runs with the defaults (NVDA, most recent trading day). The first run asks
+you to approve the plan — pick *"don't ask again"* to skip it next time.
+
+**2. Ask Claude in plain language.** Include the word *workflow* so Claude launches it and fills the
+parameters for you:
+
+```
+Run the trading-agents workflow on 0700.HK as of 2026-05-28
+```
+
+**3. Call it directly** with fully structured args (most precise — best for scripting):
 
 ```js
 Workflow({
   scriptPath: "workflows/trading-agents/trading-agents.workflow.js",
-  args: { ticker: "NVDA", date: "2026-01-15", debateRounds: 2, riskRounds: 1 }
+  args: { ticker: "NVDA", date: "2026-05-28", debateRounds: 2, riskRounds: 1 }
 })
 ```
 
+### Parameters
+
 | Arg | Default | Meaning |
 | --- | --- | --- |
-| `ticker` | `"NVDA"` | Symbol to analyze |
-| `date` | most recent trading day | Analysis date; agents ignore information after it |
-| `debateRounds` | `2` | Bull⇄bear research debate rounds |
-| `riskRounds` | `1` | Risk-reviewer debate rounds |
+| `ticker` | `NVDA` | Symbol to analyze (US / HK `.HK` / etc.). From the slash command, the first all-caps token in your text. |
+| `date` | most recent trading day | Analysis date; agents ignore information after it. From the slash command, a `YYYY-MM-DD` in your text. |
+| `debateRounds` | `2` | Bull⇄bear research debate rounds (object/`Workflow()` args only) |
+| `riskRounds` | `1` | Risk-reviewer debate rounds (object/`Workflow()` args only) |
+
+> When run as the `/trading-agents` slash command, only `ticker` and `date` are read from the trailing
+> text. To change `debateRounds` / `riskRounds`, use method 2 or 3.
 
 The agents discover and use whatever web-search / market-data / news / social tools are available in
-your session (via `ToolSearch`). With no data tools connected, they will report `dataGaps` rather
-than invent figures.
+your session (via `ToolSearch`). With no data tools connected, they report `dataGaps` rather than
+invent figures.
 
 ## Sample run
 

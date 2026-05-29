@@ -33,12 +33,19 @@ export const meta = {
 }
 
 // ---- Inputs -----------------------------------------------------------------
-// `args` is supplied at run time. No Date.now()/new Date() in workflow scripts,
-// so the analysis date must be passed in explicitly.
-const ticker = (args && args.ticker) || 'NVDA'
-const date = (args && args.date) || 'the most recent trading day'
-const debateRounds = (args && args.debateRounds) || 2
-const riskRounds = (args && args.riskRounds) || 1
+// `args` is supplied at run time and may arrive two ways:
+//   • a structured object — Workflow({ args: { ticker, date, debateRounds, riskRounds } })
+//   • a free-text string  — the trailing text of the `/trading-agents NVDA as of 2026-05-28` command
+// Handle both. (No Date.now()/new Date() in workflow scripts, so the date is parsed/passed in.)
+const _obj = (args && typeof args === 'object') ? args : {}
+const _text = (typeof args === 'string') ? args : ''
+const _ticker = _text.match(/\b[A-Z]{1,6}(?:\.[A-Z]{1,3})?\b/)   // e.g. NVDA, 0700.HK, BRK.B
+const _date = _text.match(/\b\d{4}-\d{2}-\d{2}\b/)               // e.g. 2026-05-28
+
+const ticker = _obj.ticker || (_ticker && _ticker[0]) || 'NVDA'
+const date = _obj.date || (_date && _date[0]) || 'the most recent trading day'
+const debateRounds = _obj.debateRounds || 2
+const riskRounds = _obj.riskRounds || 1
 
 const DATA_RULES = `
 Ground every claim in data you actually retrieve using the tools available to you
